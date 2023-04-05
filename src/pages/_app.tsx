@@ -1,6 +1,7 @@
 import { type AppType } from "next/app";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import LayOut from "~/components/layout/Layout";
 
 import { api } from "~/utils/api";
 
@@ -12,7 +13,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
+        <LayOut>
       <Component {...pageProps} />
+
+        </LayOut>
     </SessionProvider>
   );
 };
