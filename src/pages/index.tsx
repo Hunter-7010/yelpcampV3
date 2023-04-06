@@ -7,7 +7,6 @@ const Home: NextPage = () => {
       backgroundImage: `url('/landing.jpg')`
     }}>
       <h1 className="text-6xl text-white select-none">Welcome to YelpCamp</h1>
-
     </div>
   );
 };
