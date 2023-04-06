@@ -4,7 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import SideBar from "./sidebar";
-import DarkMode from "./darkmode";
+import DarkMode from "./layout/darkMode";
 
 const NavBar: React.FC = () => {
   const { data: sessionData } = useSession();
@@ -38,7 +38,7 @@ const NavBar: React.FC = () => {
                   <div
                     className={`text-md transition hover:cursor-pointer hover:text-gray-500/75 dark:hover:text-white/75  ${
                       router.route === "/campgrounds"
-                        ? "text-gray-800 hover:text-current dark:text-white"
+                        ? "text-gray-800 hover:text-gray-800 dark:text-white"
                         : "text-gray-500 dark:text-gray-300"
                     }`}
                   >
@@ -52,7 +52,7 @@ const NavBar: React.FC = () => {
                     <div
                       className={`text-md transition hover:cursor-pointer hover:text-gray-500/75 dark:hover:text-white/75  ${
                         router.route === "/campgrounds/new"
-                          ? "text-gray-800 hover:text-current dark:text-white"
+                          ? "text-gray-800 hover:text-gray-800 dark:text-white"
                           : "text-gray-500 dark:text-gray-300"
                       }`}
                     >
@@ -67,7 +67,7 @@ const NavBar: React.FC = () => {
                   <div
                     className={`text-md transition hover:cursor-pointer hover:text-gray-500/75 dark:hover:text-white/75  ${
                       router.route === "/campgrounds/infinite"
-                        ? "text-gray-800 hover:text-current dark:text-white"
+                        ? "text-gray-800 hover:text-gray-800 dark:text-white"
                         : "text-gray-500 dark:text-gray-300"
                     }`}
                   >
