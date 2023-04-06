@@ -83,7 +83,7 @@ const NavBar: React.FC = () => {
                 <a
                   title="sign out"
                   className="cursor-pointer rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600 transition hover:text-teal-600/75 dark:bg-gray-800 dark:text-white dark:hover:text-white/75"
-                  onClick={() => signOut()}
+                  onClick={() => void signOut()}
                 >
                   Sign out
                 </a>
@@ -91,7 +91,7 @@ const NavBar: React.FC = () => {
                 <a
                   className="block cursor-pointer rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 dark:hover:bg-teal-500"
                   title="sign in with Google"
-                  onClick={() => signIn("google")}
+                  onClick={() => void signIn("google")}
                 >
                   Login
                 </a>

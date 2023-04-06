@@ -1,52 +1,50 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import React, { useRef,useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
 const Edit: NextPage = () => {
   const { data: sessionData } = useSession();
-  
+
   const router = useRouter();
-  useEffect(()=>{
-    if(!sessionData?.user){
-      router.push('/')
+  useEffect(() => {
+    if (!sessionData?.user) {
+      void router.push("/");
     }
-  },[])
+  }, []);
   const nameRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
   const reviewRef = useRef<HTMLSelectElement>(null);
   const priceRef = useRef<HTMLInputElement>(null);
   const imageRef = useRef<HTMLInputElement>(null);
-  
 
- 
   const param = router.query.campId as string;
   const ctx = api.useContext();
-  const {mutate} = api.campground.updateCamp.useMutation({
-    onSuccess:()=>{
-      ctx.invalidate()
-      router.push(`/campgrounds/${param}`)
-    }
-  })
+  const { mutate } = api.campground.updateCamp.useMutation({
+    onSuccess: () => {
+      void router.push(`/campgrounds/${param}`);
+      return ctx.invalidate();
+    },
+  });
   const onSubmitHandler = (e: React.SyntheticEvent): void => {
     e.preventDefault();
     const enteredName = nameRef.current ? nameRef.current.value : null;
     const enteredAddress = addressRef.current ? addressRef.current.value : null;
-    const enteredPrice = priceRef.current ? priceRef.current.value : null;
+    const enteredPrice = priceRef.current ? parseFloat(priceRef.current.value) : 0;
     const enteredImage = imageRef.current ? imageRef.current.value : null;
-    const enteredReview = reviewRef.current ? reviewRef.current.value : null
+    const enteredReview = reviewRef.current ? parseFloat(reviewRef.current.value) : 0;
 
     const campData = {
-      id: param as string,
+      id: param,
       name: enteredName as string,
       address: enteredAddress as string,
-      price: enteredPrice ? +enteredPrice : enteredPrice,
+      price: enteredPrice ? enteredPrice : enteredPrice,
       image: enteredImage as string,
-      review: +enteredReview!
+      review: enteredReview,
     };
-   
-    mutate(campData)
+
+    void mutate(campData);
   };
   const campground = api.campground.getById.useQuery({
     id: param ? param : "",
@@ -94,15 +92,31 @@ const Edit: NextPage = () => {
           defaultValue={campground.price}
           ref={priceRef}
         />
-          <label htmlFor="review" className="mb-2 flex w-1/2">
+        <label htmlFor="review" className="mb-2 flex w-1/2">
           Review:
         </label>
-        <select name="" defaultValue={campground.review} id="review" className="w-1/2 border-2 rounded-md p-4 static" ref={reviewRef}>
-          <option defaultValue="1" selected={+campground.review==1}>1</option>
-          <option defaultValue="2" selected={+campground.review==2}>2</option>
-          <option defaultValue="3" selected={+campground.review==3}>3</option>
-          <option defaultValue="4" selected={+campground.review==4}>4</option>
-          <option defaultValue="5" selected={+campground.review==5}>5</option>
+        <select
+          name=""
+          defaultValue={campground.review}
+          id="review"
+          className="static w-1/2 rounded-md border-2 p-4"
+          ref={reviewRef}
+        >
+          <option defaultValue="1" selected={+campground.review == 1}>
+            1
+          </option>
+          <option defaultValue="2" selected={+campground.review == 2}>
+            2
+          </option>
+          <option defaultValue="3" selected={+campground.review == 3}>
+            3
+          </option>
+          <option defaultValue="4" selected={+campground.review == 4}>
+            4
+          </option>
+          <option defaultValue="5" selected={+campground.review == 5}>
+            5
+          </option>
         </select>
         <label htmlFor="image" className="mb-2 flex w-1/2">
           Image:

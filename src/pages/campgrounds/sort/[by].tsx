@@ -4,16 +4,16 @@ import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import DropDown from "../../../components/dropDown";
+import { CampTypes } from "~/types/campground.types";
 
 const SortedCampgrounds: NextPage = () => {
 const router = useRouter()
 const param = router.query.by as string
 
-  const {data:campgroundData} = api.searchCampground.sort.useQuery({by:param},{
+  const {data:campgrounds} = api.searchCampground.sort.useQuery({by:param},{
     refetchOnWindowFocus:false,
-  });
+  }) as { data: CampTypes[] };
   
-  const campgrounds= campgroundData
 
   const [searchTerm, setSearchTerms] = useState("")
  
@@ -22,7 +22,7 @@ const param = router.query.by as string
 
   }
   const onSearchHandler =(e:React.MouseEvent<HTMLElement> |null):void=> {
-    router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`)
+    void router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`)
   }
   const handleKeyDown = (e:React.KeyboardEvent<HTMLElement>)=>{
     if(e.key ==='Enter'){
@@ -85,7 +85,7 @@ const param = router.query.by as string
        
         {campgrounds ? (
             
-          campgrounds.map((camp:any) => (
+          campgrounds.map((camp) => (
             <Link href={`/campgrounds/${camp._id}`} key={camp._id}>
               <div className="flex md:w-1/3" key={camp._id}>
                 <div className="m-2 flex w-full flex-col items-center justify-center duration-300 hover:scale-110 hover:bg-slate-400">

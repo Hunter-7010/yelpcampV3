@@ -1,8 +1,7 @@
-
+import { CampTypes } from "~/types/campground.types";
 import {
   createTRPCRouter,
   publicProcedure,
-  protectedProcedure,
 } from "~/server/api/trpc";
 import { z } from "zod";
 
@@ -10,7 +9,7 @@ export const searchCampground = createTRPCRouter({
   getBySearchTerm: publicProcedure
     .input(
       z.object({
-        searchTerm: z.any(),
+        searchTerm: z.string(),
       })
     )
     .query(async ({ input,ctx }) => {
@@ -35,7 +34,7 @@ export const searchCampground = createTRPCRouter({
         ])
         .toArray();
         
-      return camps;
+      return camps
     }),
     sort: publicProcedure 
     .input(z.object({

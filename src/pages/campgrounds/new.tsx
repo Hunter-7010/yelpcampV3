@@ -10,7 +10,7 @@ const NewCamp: NextPage = () => {
   const { data: sessionData } = useSession();
   useEffect(()=>{
     if(!sessionData?.user){
-      router.push('/')
+      void router.push('/')
     }
   },[])
   
@@ -22,8 +22,8 @@ const NewCamp: NextPage = () => {
   const ctx = api.useContext()
   const {mutate} = api.campground.addCamp.useMutation({
     onSuccess:()=>{
-      ctx.invalidate()
-      router.push('/campgrounds')
+      void router.push('/campgrounds')
+      return ctx.invalidate()
     }
   })
 
@@ -31,16 +31,16 @@ const NewCamp: NextPage = () => {
     e.preventDefault();
     const enteredName = nameRef.current ? nameRef.current.value : null ;
     const enteredAddress = addressRef.current? addressRef.current.value : null; 
-    const enteredPrice = priceRef.current ? priceRef.current.value : null;
+    const enteredPrice = priceRef.current ? parseFloat(priceRef.current.value) : 0;
     const enteredImage = imageRef.current ? imageRef.current.value : null;
-    const enteredReview = reviewRef.current ? reviewRef.current.value : null
+    const enteredReview = reviewRef.current ? parseFloat(reviewRef.current.value) : 0;
 
     const campData = {
       name: enteredName as string,
       address: enteredAddress as string,
-      price: enteredPrice ? +enteredPrice:enteredPrice,
+      price: enteredPrice ? enteredPrice:enteredPrice,
       image: enteredImage as string,
-      review: +enteredReview!
+      review: enteredReview
     };
     
     

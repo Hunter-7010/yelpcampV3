@@ -22,7 +22,7 @@ const Campgrounds: NextPage = () => {
     setSearchTerms(e.currentTarget.value);
   };
   const onSearchHandler = (e: React.MouseEvent<HTMLElement> | null): void => {
-    router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`);
+   void router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter") {
@@ -89,7 +89,7 @@ const Campgrounds: NextPage = () => {
     
       <div className="mt-4  w-full sm:flex sm:flex-wrap ">
         {campgrounds ? (
-          campgrounds.map((camp: any) => (
+          campgrounds.map((camp) => (
             <Link href={`/campgrounds/${camp.id}`} key={camp.id}>
               <div className="flex md:w-1/3" key={camp.id}>
                 <div className="m-2 flex w-full flex-col items-center justify-center duration-300 hover:scale-110 hover:bg-slate-400">

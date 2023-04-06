@@ -5,7 +5,6 @@ import { useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-
 const Show: NextPage = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
@@ -23,13 +22,13 @@ const Show: NextPage = () => {
   const ctx = api.useContext();
   const deleteCamp = api.campground.deleteCamp.useMutation({
     onSuccess: () => {
-      ctx.invalidate();
-      router.push("/campgrounds");
+      void router.push("/campgrounds");
+      return ctx.invalidate();
     },
   });
   const deleteReview = api.campground.deleteReview.useMutation({
     onSuccess: () => {
-      ctx.invalidate();
+      return ctx.invalidate();
     },
   });
   const deleteHandler = () => {
@@ -39,7 +38,7 @@ const Show: NextPage = () => {
   const commentRef = useRef<HTMLTextAreaElement>(null);
   const insertReview = api.campground.insertReview.useMutation({
     onSuccess: () => {
-      ctx.invalidate();
+      return ctx.invalidate();
     },
   });
 
@@ -47,7 +46,7 @@ const Show: NextPage = () => {
     e.preventDefault();
     const reviewData = {
       campId: param,
-      comment: commentRef.current?.value,
+      comment: commentRef.current?.value ||"",
     };
     insertReview.mutate(reviewData);
     if (commentRef.current) {
@@ -124,7 +123,7 @@ const Show: NextPage = () => {
               {campground.reviews
                 .slice(0)
                 .reverse()
-                .map((review:any) => (
+                .map((review) => (
                   <li
                     className="mt-2 flex h-20 items-center justify-between bg-white px-4"
                     key={review.id}

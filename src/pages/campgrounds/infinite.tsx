@@ -1,17 +1,20 @@
+/* eslint-disable */
+
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ChangeEvent, Fragment, useState,useEffect } from "react";
+import { ChangeEvent, Fragment, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import DropDown from "../../components/dropDown";
 import { useSession } from "next-auth/react";
+import { CampTypes } from "~/types/campground.types";
 
 const Infinite: NextPage = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
 
   let skip = 0;
-  const { fetchNextPage, data, isFetchingNextPage, hasNextPage,remove } =
+  const { fetchNextPage, data, isFetchingNextPage, hasNextPage, remove } =
     api.campground.testAll.useInfiniteQuery(
       {
         skip: skip,
@@ -20,17 +23,17 @@ const Infinite: NextPage = () => {
         refetchOnWindowFocus: false,
         getNextPageParam: (lastPage: any) => {
           lastPage.skip = skip;
-          if(lastPage.camp.length ===0){
+          if (lastPage.camp.length === 0) {
             return undefined;
           }
-          return lastPage.skip
+          return lastPage.skip;
         },
       }
     );
-      useEffect(()=>{
-        remove()
-        fetchNextPage()
-      },[])
+  useEffect(() => {
+    remove();
+    fetchNextPage();
+  }, []);
 
   const [searchTerm, setSearchTerms] = useState("");
 
@@ -38,7 +41,7 @@ const Infinite: NextPage = () => {
     setSearchTerms(e.currentTarget.value);
   };
   const onSearchHandler = (e: React.MouseEvent<HTMLElement> | null): void => {
-    router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`);
+    void router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "Enter") {
@@ -58,11 +61,11 @@ const Infinite: NextPage = () => {
         <div className="mt-2 text-lg text-white ">
           View CampGround form all around the world!
         </div>
-        {
-          !sessionData ? ( <div className="mt-2 text-lg text-white font-bold ">
-          Sign in to Add a Campground
-         </div>):null
-        }
+        {!sessionData ? (
+          <div className="mt-2 text-lg font-bold text-white ">
+            Sign in to Add a Campground
+          </div>
+        ) : null}
       </div>
       <div className="flex h-12 w-full items-center justify-between bg-white shadow-lg">
         <DropDown />
@@ -104,9 +107,9 @@ const Infinite: NextPage = () => {
       </div>
 
       <div className="mt-4  w-full sm:flex sm:flex-wrap ">
-        {data?.pages.map((group:any, i:any) => (
+        {data?.pages.map((group: { camp: CampTypes[] }, i: number) => (
           <Fragment key={i}>
-            {group.camp.map((camp: any) => (
+            {group.camp.map((camp: CampTypes) => (
               <Link href={`/campgrounds/${camp.id}`} key={camp.id}>
                 <div className="flex md:w-1/3" key={camp.id}>
                   <div className="m-2 flex w-full flex-col items-center justify-center duration-300 hover:scale-110 hover:bg-slate-400">

@@ -37,7 +37,7 @@ export const campgroundRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const limit = 3;
+      const limit = 3; 
       const { cursor } = input;
 
       const camp = await ctx.prisma.camp.findMany({
@@ -53,11 +53,11 @@ export const campgroundRouter = createTRPCRouter({
   addCamp: protectedProcedure
     .input(
       z.object({
-        name: z.any(),
-        address: z.any(),
-        price: z.any(),
-        image: z.any(),
-        review: z.any(),
+        name: z.string(),
+        address: z.string(),
+        price: z.number(),
+        image: z.string(),
+        review: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -96,12 +96,12 @@ export const campgroundRouter = createTRPCRouter({
   updateCamp: protectedProcedure
     .input(
       z.object({
-        id: z.any(),
-        name: z.any(),
-        address: z.any(),
-        price: z.any(),
-        image: z.any(),
-        review: z.any(),
+        id: z.string(),
+        name: z.string(),
+        address: z.string(),
+        price: z.number(),
+        image: z.string(),
+        review: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -128,8 +128,8 @@ export const campgroundRouter = createTRPCRouter({
   insertReview: protectedProcedure
     .input(
       z.object({
-        campId: z.any(),
-        comment: z.any(),
+        campId: z.string(),
+        comment: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -145,7 +145,7 @@ export const campgroundRouter = createTRPCRouter({
   deleteReview: protectedProcedure
     .input(
       z.object({
-        reviewId: z.any(),
+        reviewId: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
