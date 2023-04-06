@@ -4,6 +4,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 import SideBar from "./sidebar";
+import DarkMode from "./darkmode";
 
 const NavBar: React.FC = () => {
   const { data: sessionData } = useSession();
@@ -96,9 +97,18 @@ const NavBar: React.FC = () => {
                   Login
                 </a>
               )}
+
+            </div>
+            <div className="hidden md:block">
+              <DarkMode />
+
             </div>
 
             <SideBar>
+              <div className="flex justify-center">
+            <DarkMode />
+
+              </div>
               <div>
                 <Link href="/campgrounds">
                   <div
