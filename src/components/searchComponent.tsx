@@ -3,9 +3,8 @@ import { useState } from "react";
 
 import DropDown from "./dropDown";
 
-type Props = {}
 
-const SearchComponent = (props: Props) => {
+const SearchComponent = () => {
     const router = useRouter();
     const [searchTerm, setSearchTerms] = useState("");
 
