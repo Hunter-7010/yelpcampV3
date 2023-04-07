@@ -1,12 +1,13 @@
 import NavBar from "../navbar";
 import Head from "next/head";
+import Footer from "../footer";
 type LayoutProps = {
   children: React.ReactNode; // 👈️ type children
 };
 
 const LayOut = (props: LayoutProps) => {
   return (
-    <main className="bg-gray-100 font-serif">
+    <main className="bg-gray-100 dark:text-white font-serif">
       <Head>
         <title>YelpCamp</title>
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
@@ -19,6 +20,7 @@ const LayOut = (props: LayoutProps) => {
       </Head>
       <NavBar />
       <div>{props.children ? props.children : null}</div>
+      <Footer/>
     </main>
   );
 };

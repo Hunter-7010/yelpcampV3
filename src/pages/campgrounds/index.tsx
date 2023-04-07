@@ -1,34 +1,19 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ChangeEvent, useState } from "react";
-import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import DropDown from "../../components/dropDown";
 import { useSession } from "next-auth/react";
-
+import SearchComponent from "~/components/searchComponent";
 const Campgrounds: NextPage = () => {
-  const router = useRouter();
-  const { data: sessionData } = useSession()
+  const { data: sessionData } = useSession();
 
-  const { data: campgroundData,isLoading } = api.campground.getAll.useQuery(undefined, {
-    refetchOnWindowFocus: false,
-  });
+  const { data: campgroundData, isLoading } = api.campground.getAll.useQuery(
+    undefined,
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const campgrounds = campgroundData;
-
-  const [searchTerm, setSearchTerms] = useState("");
-
-  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerms(e.currentTarget.value);
-  };
-  const onSearchHandler = (e: React.MouseEvent<HTMLElement> | null): void => {
-   void router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`);
-  };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === "Enter") {
-      onSearchHandler(null);
-    }
-  };
 
   return (
     <div className="flex flex-col items-center md:h-full">
@@ -42,51 +27,15 @@ const Campgrounds: NextPage = () => {
         <div className="mt-2 text-lg text-white ">
           View CampGround form all around the world!
         </div>
-        {
-          !sessionData ? ( <div className="mt-2 text-lg text-white font-bold ">
-          Sign in to Add a Campground
-         </div>):null
-        }
+        {!sessionData ? (
+          <div className="mt-2 text-lg font-bold text-white ">
+            Sign in to Add a Campground
+          </div>
+        ) : null}
       </div>
-      <div className="flex h-12 w-full items-center justify-between bg-white shadow-lg">
-        <DropDown />
-        <div className="mr-52 flex">
-          <input
-            type="text"
-            name=""
-            id=""
-            className="border pl-2 shadow-md"
-            placeholder="Search Campground"
-            onChange={onChangeHandler}
-            onKeyDown={handleKeyDown}
-          />
-          <a
-            className="flex w-8 cursor-pointer items-center justify-center bg-sky-400 shadow-md"
-            onClick={onSearchHandler}
-          >
-            <svg
-              className="text-gray-200 "
-              width="21"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {" "}
-              <circle
-                cx="11.7669"
-                cy="11.7666"
-                r="8.98856"
-                stroke="currentColor"
-              ></circle>{" "}
-              <path
-                d="M18.0186 18.4851L21.5426 22"
-                stroke="currentColor"
-              ></path>{" "}
-            </svg>
-          </a>
-        </div>
-      </div>
-    
+
+      <SearchComponent />
+
       <div className="mt-4  w-full sm:flex sm:flex-wrap ">
         {campgrounds ? (
           campgrounds.map((camp) => (
@@ -94,7 +43,7 @@ const Campgrounds: NextPage = () => {
               <div className="flex md:w-1/3" key={camp.id}>
                 <div className="m-2 flex w-full flex-col items-center justify-center duration-300 hover:scale-110 hover:bg-slate-400">
                   <img
-                  alt="campground picture"
+                    alt="campground picture"
                     src={camp.image}
                     onError={({ currentTarget }) => {
                       currentTarget.onerror = null; // prevents looping
@@ -137,7 +86,7 @@ const Campgrounds: NextPage = () => {
             <span className="sr-only">Loading...</span>
           </div>
         )}
-      </div> 
+      </div>
     </div>
   );
 };
