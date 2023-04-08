@@ -20,6 +20,8 @@ const CommentForm = ({ campId }: Props) => {
     const reviewData = {
       campId: campId,
       comment: commentRef.current?.value || "",
+      description: "",
+      review: 3,
     };
     insertReview(reviewData);
     if (commentRef.current) {
@@ -43,7 +45,7 @@ const CommentForm = ({ campId }: Props) => {
                 ? "Please Sign in to make a comment"
                 : "Write a comment..."
             }
-            className="w-full border-0 focus:outline-none bg-white px-0 text-sm text-gray-900 focus:ring-0 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+            className="w-full border-0 bg-white px-0 text-sm text-gray-900 focus:outline-none focus:ring-0 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
           ></textarea>
         </div>
         <div className="flex items-center justify-between border-t px-3 py-2 dark:border-gray-600">
@@ -58,24 +60,23 @@ const CommentForm = ({ campId }: Props) => {
             <button
               type="button"
               onClick={() => void signIn("google")}
-              className="mb-2 mr-2 rounded-lg border transition duration-300 border-blue-700 px-5 py-2.5 text-center text-sm font-medium text-blue-700 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500 dark:hover:text-white dark:focus:ring-blue-800"
+              className="mb-2 mr-2 rounded-lg border border-blue-700 px-5 py-2.5 text-center text-sm font-medium text-blue-700 transition duration-300 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:bg-blue-500 dark:hover:text-white dark:focus:ring-blue-800"
             >
               SignIn
             </button>
           )}
           <p className="ml-auto text-xs text-gray-500 dark:text-gray-400">
-        Remember, contributions to this topic should follow our{" "}
-        <a
-          href="#"
-          className="text-blue-600 hover:underline dark:text-blue-500"
-        >
-          Community Guidelines
-        </a>
-        .
-      </p>
+            Remember, contributions to this topic should follow our{" "}
+            <a
+              href="#"
+              className="text-blue-600 hover:underline dark:text-blue-500"
+            >
+              Community Guidelines
+            </a>
+            .
+          </p>
         </div>
       </div>
-
     </form>
   );
 };

@@ -55,7 +55,7 @@ const Infinite: NextPage = () => {
 
       <div className="mt-4  w-full sm:flex sm:flex-wrap ">
         {data?.pages.map((group: { camp: CampTypes[] }, i: number) => (
-          <Fragment key={i}>
+          <div key={i}>
             {group.camp.map((camp: CampTypes) => (
               <Link href={`/campgrounds/${camp.id}`} key={camp.id}>
                 <div className="flex md:w-1/3" key={camp.id}>
@@ -80,7 +80,7 @@ const Infinite: NextPage = () => {
                 </div>
               </Link>
             ))}
-          </Fragment>
+          </div>
         ))}
       </div>
       <div>

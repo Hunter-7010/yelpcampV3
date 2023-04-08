@@ -1,139 +1,323 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import React, { useRef, useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import React, { useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-const Edit: NextPage = () => {
-  const { data: sessionData } = useSession();
+import Rating from "~/components/rating";
 
+const NewCamp: NextPage = () => {
   const router = useRouter();
+  const [campName, setCampName] = useState("");
+  const { data: sessionData } = useSession();
+  const param = router.query.campId as string;
+  //animation
+  const [animationParent] = useAutoAnimate<HTMLDivElement>();
+  // const imageCloudUrl = env.PUBLIC_CLOUDINARY_URL
+  const formRef = useRef<HTMLFormElement>(null);
+  const [rating, setRating] = useState(3);
   useEffect(() => {
     if (!sessionData?.user) {
       void router.push("/");
     }
   }, []);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const addressRef = useRef<HTMLInputElement>(null);
-  const reviewRef = useRef<HTMLSelectElement>(null);
-  const priceRef = useRef<HTMLInputElement>(null);
-  const imageRef = useRef<HTMLInputElement>(null);
+  const campgroundFormSchema = z.object({
+    id: z.string().min(24),
+    name: z.string().min(1, "Cannot be empty"),
+    address: z.string(),
+    description: z.string(),
+    price: z.number().positive().min(1, "Cannot be empty"),
+    review: z.number().int().positive(),
+    image: z.string(),
+  });
+  type campgroundFormSchemaType = z.infer<typeof campgroundFormSchema>;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<campgroundFormSchemaType>({
+    resolver: zodResolver(campgroundFormSchema),
+  });
+  console.log(errors);
 
-  const param = router.query.campId as string;
   const ctx = api.useContext();
-  const { mutate } = api.campground.updateCamp.useMutation({
+  const { mutateAsync } = api.campground.updateCamp.useMutation({
     onSuccess: () => {
-      void router.push(`/campgrounds/${param}`);
+      void router.push("/campgrounds");
       return ctx.invalidate();
     },
   });
-  const onSubmitHandler = (e: React.SyntheticEvent): void => {
-    e.preventDefault();
-    const enteredName = nameRef.current ? nameRef.current.value : null;
-    const enteredAddress = addressRef.current ? addressRef.current.value : null;
-    const enteredPrice = priceRef.current ? parseFloat(priceRef.current.value) : 0;
-    const enteredImage = imageRef.current ? imageRef.current.value : null;
-    const enteredReview = reviewRef.current ? parseFloat(reviewRef.current.value) : 0;
 
-    const campData = {
-      id: param,
-      name: enteredName as string,
-      address: enteredAddress as string,
-      price: enteredPrice ? enteredPrice : enteredPrice,
-      image: enteredImage as string,
-      review: enteredReview,
+  const [imageSrc, setImageSrc] = useState<string | null>("");
+  const [uploadData, setUploadData] = useState<string>();
+  /**
+   * handleOnChange
+   * @description Triggers when the file input changes (ex: when a file is selected)
+   */
+  function handleOnChange(changeEvent: React.ChangeEvent<HTMLInputElement>) {
+    const file = changeEvent.target.files![0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (onLoadEvent: ProgressEvent<FileReader>) {
+      if (onLoadEvent.target) {
+        const result = onLoadEvent.target.result;
+        if (typeof result === "string") {
+          setImageSrc(result);
+          setUploadData(undefined);
+        }
+      }
     };
 
-    void mutate(campData);
+    reader.readAsDataURL(file);
+  }
+
+  /**
+   * handleOnSubmit
+   * @description Triggers when the main form is submitted
+   */
+
+  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> = async (
+    dataToSend
+  ) => {
+    const form = formRef.current!;
+    const fileInput = Array.from(form.elements as unknown as HTMLInputElement[]).find(
+      (el) => el.name === "file"
+    ) as HTMLInputElement;
+
+    const formData = new FormData();
+
+    const file = Array.from(fileInput.files!)[0];
+    formData.append("file", file!);
+
+    formData.append("upload_preset", "my-uploads");
+
+    const data = await fetch(
+      "https://api.cloudinary.com/v1_1/dddvtrxcz/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      }
+    )
+      .then((r) => r.json())
+      .then((data: { secure_url: string }) => {
+        return {
+          secure_url: data.secure_url,
+        };
+      });
+
+    const payload = {
+      ...dataToSend,
+      image: data.secure_url,
+      review: rating,
+      id: param,
+    };
+    setImageSrc(data.secure_url);
+    setUploadData(data.secure_url);
+    console.log(payload);
+
+    void toast.promise(
+      mutateAsync(payload),
+      {
+        loading: "...Loading",
+        success: "Edited The Campground",
+        error: "Something went wrong",
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 1000,
+        },
+      }
+    );
   };
-  const {data:campground} = api.campground.getById.useQuery({
-    id: param ? param : "",
-  })
-  if (!campground) {
-    return <div>Loading...</div>;
+  const { data: campground, isLoading } =
+    api.campground.getByIdNoReviews.useQuery(
+      {
+        id: param ? param : "",
+      },
+      {
+        onSuccess: (data) => {
+          setImageSrc(data?.image ?? "");
+          setRating(data?.review ?? 3);
+          setValue("id", campground?.id ?? param);
+          setCampName(data?.name ?? "");
+          console.log(data);
+        },
+      }
+    );
+  console.log("buggy name", campground);
+  if (isLoading) {
+    return <div>...Loading</div>;
   }
   return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <form
-        className="flex h-2/3 w-2/3 flex-col items-center justify-center border bg-gray-100"
-        onSubmit={onSubmitHandler}
-      >
-        <h1 className="mb-6 text-3xl font-bold text-gray-800">
-          Add a new Campground
-        </h1>
-        <label htmlFor="name" className="mb-2 flex w-1/2">
-          Title:
-        </label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          className="h-12 w-1/2 rounded-md border-2 p-4"
-          defaultValue={campground.name}
-          ref={nameRef}
-        />
-        <label htmlFor="address" className="mb-2 flex w-1/2">
-          Address:
-        </label>
-        <input
-          type="text"
-          id="address"
-          className="h-12 w-1/2 rounded-md border-2 p-4"
-          defaultValue={campground.address}
-          ref={addressRef}
-        />
-        <label htmlFor="price" className="mb-2 flex w-1/2">
-          Price:
-        </label>
-        <input
-          type="number"
-          id="price"
-          className="h-12 w-1/2 rounded-md border-2 p-4"
-          defaultValue={campground.price}
-          ref={priceRef}
-        />
-        <label htmlFor="review" className="mb-2 flex w-1/2">
-          Review:
-        </label>
-        <select
-          name=""
-          defaultValue={campground.review}
-          id="review"
-          className="static w-1/2 rounded-md border-2 p-4"
-          ref={reviewRef}
+    <div className="">
+      <section className="bg-white dark:bg-gray-900">
+        <div
+          ref={animationParent}
+          className="mx-auto max-w-2xl px-4 py-8 lg:py-16"
         >
-          <option defaultValue="1" selected={+campground.review == 1}>
-            1
-          </option>
-          <option defaultValue="2" selected={+campground.review == 2}>
-            2
-          </option>
-          <option defaultValue="3" selected={+campground.review == 3}>
-            3
-          </option>
-          <option defaultValue="4" selected={+campground.review == 4}>
-            4
-          </option>
-          <option defaultValue="5" selected={+campground.review == 5}>
-            5
-          </option>
-        </select>
-        <label htmlFor="image" className="mb-2 flex w-1/2">
-          Image:
-        </label>
-        <input
-          type="text"
-          id="image"
-          className="h-12 w-1/2 rounded-md border-2 p-4"
-          defaultValue={campground.image}
-          ref={imageRef}
-        />
-        <button className="mt-4 h-16 rounded-3xl bg-sky-500 px-6 text-sky-900 duration-500 hover:scale-110">
-          Edit CampGround
-        </button>
-      </form>
+          {imageSrc && (
+            <img
+              src={imageSrc || ""}
+              className="mx-auto mb-4 h-96"
+              alt="user provided image"
+            />
+          )}
+          <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+            Edit Campground
+          </h2>
+          <form ref={formRef} onSubmit={void handleSubmit(formSubmitHandler)}>
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+              <input
+                type="readonly"
+                value={param}
+                {...register("name")}
+                id=""
+              />
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="name"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Campground Name
+                </label>
+                <input
+                  type="text"
+                  {...register("name")}
+                  id="name"
+                  defaultValue={campName}
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-teal-600 focus:ring-teal-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
+                  placeholder="Type Campground name"
+                />
+                {errors.name && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {" "}
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <label
+                  htmlFor="address"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Address
+                </label>
+                <input
+                  type="text"
+                  {...register("address")}
+                  id="address"
+                  defaultValue={campground?.address}
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-teal-600 focus:ring-teal-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
+                  placeholder="Campground Address"
+                />
+                {errors.address && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {" "}
+                    {errors.address.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <label
+                  htmlFor="price"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Price Per Night
+                </label>
+                <input
+                  type="text"
+                  {...register("price", {
+                    valueAsNumber: true,
+                  })}
+                  defaultValue={campground?.price}
+                  id="price"
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-teal-600 focus:ring-teal-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
+                  placeholder="$2.9"
+                />
+                {errors.price && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {" "}
+                    {errors.price.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="review"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Rate
+                </label>
+                <input
+                  type="hidden"
+                  value={rating}
+                  {...register("review", {
+                    valueAsNumber: true,
+                  })}
+                />
+                <Rating rating={rating} setRating={setRating} />
+              </div>
+              <div className="group relative w-2/3">
+                <label
+                  htmlFor="item-weight"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Image
+                </label>
+                <input className="hidden" {...register("image")} />
+                <label className=" flex h-[42px] items-center justify-center rounded-md border border-blue-700 bg-blue-500 px-6 text-lg text-blue-50 transition duration-300 group-hover:bg-blue-200 group-hover:text-blue-900">
+                  Change Image
+                </label>
+                <input
+                  type="file"
+                  className="absolute inset-0 cursor-pointer opacity-0"
+                  onChange={handleOnChange}
+                  name="file"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <label
+                  htmlFor="description"
+                  className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  rows={8}
+                  {...register("description")}
+                  defaultValue={campground?.description}
+                  className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
+                  placeholder="Your description here"
+                ></textarea>
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={isSubmitSuccessful}
+              className="mt-4 inline-flex items-center rounded-lg bg-teal-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-teal-800 focus:ring-4 focus:ring-teal-200 disabled:opacity-50 dark:focus:ring-teal-900 sm:mt-6"
+            >
+              Edit Campground
+            </button>
+          </form>
+        </div>
+      </section>
     </div>
   );
 };
 
-export default Edit;
+export default NewCamp;

@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Star from "~/components/svgs/star";
 import CommentForm from "~/components/commentForm";
 import UserSvg from "~/components/svgs/user";
+import { toast } from "react-hot-toast";
 
 const Show: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -29,11 +30,12 @@ const Show: NextPage = () => {
       return ctx.invalidate();
     },
   });
-  const { mutate: deleteReview } = api.campground.deleteReview.useMutation({
-    onSuccess: () => {
-      return ctx.invalidate();
-    },
-  });
+  const { mutate: deleteReview, isLoading: isSaving } =
+    api.campground.deleteReview.useMutation({
+      onSuccess: () => {
+        return ctx.invalidate();
+      },
+    });
   const deleteHandler = () => {
     deleteCamp.mutate({ id: param });
   };
@@ -41,6 +43,7 @@ const Show: NextPage = () => {
   const deleteReviewHandler = (reviewId: string): void => {
     deleteReview({ reviewId: reviewId });
   };
+
 
   return (
     <div className="">
@@ -93,37 +96,31 @@ const Show: NextPage = () => {
 
               <div className="mt-4">
                 <div className="prose max-w-none">
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Ipsa veniam dicta beatae eos ex error culpa delectus rem
-                    tenetur, architecto quam nesciunt, dolor veritatis nisi
-                    minus inventore, rerum at recusandae?
-                  </p>
+                  <p>{campground?.description}</p>
                 </div>
 
                 <button className="mt-2 text-sm font-medium underline">
                   Read More
                 </button>
               </div>
-              {sessionData?.user.id ==campground?.authorId &&(
-              <div className="mt-8 flex gap-4">
-                <button
-                  type="button"
-                  onClick={deleteHandler}
-                  className="mb-2 mr-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
-                >
-                  Delete
-                </button>
-                <Link href={`/campgrounds/${param}/edit`}>
+              {sessionData?.user.id == campground?.authorId && (
+                <div className="mt-8 flex gap-4">
                   <button
                     type="button"
-                    className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    onClick={deleteHandler}
+                    className="mb-2 mr-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
                   >
-                    Edit
+                    Delete
                   </button>
-                </Link>
-              </div>
-
+                  <Link href={`/campgrounds/${param}/edit`}>
+                    <button
+                      type="button"
+                      className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    >
+                      Edit
+                    </button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -143,7 +140,7 @@ const Show: NextPage = () => {
               ) : null}
             </form> */}
             <CommentForm campId={param} />
-            <ul className="p-2 space-y-4">
+            <ul className="space-y-4 p-2">
               {campground?.reviews
                 .slice(0)
                 .reverse()
@@ -167,14 +164,16 @@ const Show: NextPage = () => {
                         </div>
                       </div>
                       <div className="mb-1 flex items-center">
-                      {[...Array(campground?.review).keys()].map((i: number) => (
-                      <Star textColor="text-yellow-400" key={i} />
-                    ))}
-                    {[...Array(5 - (campground?.review || 0)).keys()].map(
-                      (i: number) => (
-                        <Star textColor="text-gray-200" key={i} />
-                      )
-                    )}
+                        {[...Array(campground?.review).keys()].map(
+                          (i: number) => (
+                            <Star textColor="text-yellow-400" key={i} />
+                          )
+                        )}
+                        {[...Array(5 - (campground?.review || 0)).keys()].map(
+                          (i: number) => (
+                            <Star textColor="text-gray-200" key={i} />
+                          )
+                        )}
                         {/* <h3 className="ml-2 text-sm font-semibold text-gray-900 dark:text-white">
                           Thinking to buy another one!
                         </h3> */}

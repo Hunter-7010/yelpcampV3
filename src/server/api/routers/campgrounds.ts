@@ -15,7 +15,15 @@ export const campgroundRouter = createTRPCRouter({
         },
         include: { reviews: true },
       });
-     
+    }),
+    getByIdNoReviews: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.camp.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.camp.findMany({
@@ -35,7 +43,7 @@ export const campgroundRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const limit = 3; 
+      const limit = 3;
       const { cursor } = input;
 
       const camp = await ctx.prisma.camp.findMany({
@@ -52,9 +60,10 @@ export const campgroundRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
+        description: z.string(),
         address: z.string(),
         price: z.number(),
-        image: z.string(),
+        image: z.string().default(""),
         review: z.number(),
       })
     )
@@ -63,6 +72,7 @@ export const campgroundRouter = createTRPCRouter({
         data: {
           name: input.name,
           address: input.address,
+          description: input.description,
           price: input.price,
           review: input.review,
           image: input.image,
@@ -96,9 +106,10 @@ export const campgroundRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string(),
+        description: z.string(),
         address: z.string(),
         price: z.number(),
-        image: z.string(),
+        image: z.string().optional(),
         review: z.number(),
       })
     )
@@ -116,6 +127,7 @@ export const campgroundRouter = createTRPCRouter({
           data: {
             name: input.name,
             address: input.address,
+            description: input.description,
             price: input.price,
             review: input.review,
             image: input.image,
@@ -128,12 +140,16 @@ export const campgroundRouter = createTRPCRouter({
       z.object({
         campId: z.string(),
         comment: z.string(),
+        description: z.string(),
+        review: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.reviews.create({
         data: {
           comment: input.comment,
+          description: input.description,
+          review: input.review,
           userId: ctx.session.user.id,
           username: ctx.session.user.name as string,
           camp: { connect: { id: input.campId } },

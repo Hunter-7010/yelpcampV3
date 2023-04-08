@@ -29,6 +29,7 @@ const server = z.object({
  */
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  PUBLIC_CLOUDINARY_URL:z.string().min(1)
 });
 
 /**
@@ -45,6 +46,7 @@ const processEnv = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  PUBLIC_CLOUDINARY_URL:process.env.CLOUDINARY_URL,
 };
 
 // Don't touch the part below

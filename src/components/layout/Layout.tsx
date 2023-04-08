@@ -1,3 +1,5 @@
+import { Toaster } from "react-hot-toast";
+
 import NavBar from "../navbar";
 import Head from "next/head";
 import Footer from "../footer";
@@ -7,7 +9,8 @@ type LayoutProps = {
 
 const LayOut = (props: LayoutProps) => {
   return (
-    <main className="dark:text-white text-gray-900 font-serif dark:bg-gray-800">
+    <main className="font-serif text-gray-900 dark:bg-gray-800 dark:text-white">
+      <Toaster />
       <Head>
         <title>YelpCamp</title>
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
@@ -20,7 +23,7 @@ const LayOut = (props: LayoutProps) => {
       </Head>
       <NavBar />
       <div className="">{props.children ? props.children : null}</div>
-      <Footer/>
+      <Footer />
     </main>
   );
 };
