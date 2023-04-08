@@ -69,10 +69,12 @@ model Camp {
 }
 
 model Reviews {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  comment  String
-  campId   String @db.ObjectId
-  camp     Camp   @relation(fields: [campId], references: [id], onDelete: Cascade)
-  userId   String
-  username String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment   String
+  campId    String   @db.ObjectId
+  camp      Camp     @relation(fields: [campId], references: [id], onDelete: Cascade)
+  userId    String
+  username  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

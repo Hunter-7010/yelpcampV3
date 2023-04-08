@@ -7,7 +7,7 @@ type LayoutProps = {
 
 const LayOut = (props: LayoutProps) => {
   return (
-    <main className="dark:text-white font-serif dark:bg-gray-800">
+    <main className="dark:text-white text-gray-900 font-serif dark:bg-gray-800">
       <Head>
         <title>YelpCamp</title>
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
@@ -19,7 +19,7 @@ const LayOut = (props: LayoutProps) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <NavBar />
-      <div>{props.children ? props.children : null}</div>
+      <div className="">{props.children ? props.children : null}</div>
       <Footer/>
     </main>
   );

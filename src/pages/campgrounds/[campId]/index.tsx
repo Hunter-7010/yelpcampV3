@@ -1,10 +1,12 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
-import { useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+
 import Star from "~/components/svgs/star";
+import CommentForm from "~/components/commentForm";
+import UserSvg from "~/components/svgs/user";
 
 const Show: NextPage = () => {
   const { data: sessionData } = useSession();
@@ -27,7 +29,7 @@ const Show: NextPage = () => {
       return ctx.invalidate();
     },
   });
-  const deleteReview = api.campground.deleteReview.useMutation({
+  const { mutate: deleteReview } = api.campground.deleteReview.useMutation({
     onSuccess: () => {
       return ctx.invalidate();
     },
@@ -36,32 +38,12 @@ const Show: NextPage = () => {
     deleteCamp.mutate({ id: param });
   };
 
-  const commentRef = useRef<HTMLTextAreaElement>(null);
-  const insertReview = api.campground.insertReview.useMutation({
-    onSuccess: () => {
-      return ctx.invalidate();
-    },
-  });
-
-  const commentHandler = (e: React.SyntheticEvent): void => {
-    e.preventDefault();
-    const reviewData = {
-      campId: param,
-      comment: commentRef.current?.value || "",
-    };
-    insertReview.mutate(reviewData);
-    if (commentRef.current) {
-      commentRef.current.value = "";
-    }
-  };
-
-  const deleteReviewHandler = (e: React.MouseEvent<HTMLElement>): void => {
-    const reviewId = { reviewId: e.currentTarget.id };
-    deleteReview.mutate(reviewId);
+  const deleteReviewHandler = (reviewId: string): void => {
+    deleteReview({ reviewId: reviewId });
   };
 
   return (
-    <div className=" ">
+    <div className="">
       <section>
         <div className="relative mx-auto max-w-screen-xl px-4 py-8">
           <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
@@ -106,7 +88,7 @@ const Show: NextPage = () => {
                   </div>
                 </div>
 
-                <p className="text-lg font-bold">${campground?.price}</p>
+                <p className="text-lg font-bold">${campground?.price}/night</p>
               </div>
 
               <div className="mt-4">
@@ -123,6 +105,7 @@ const Show: NextPage = () => {
                   Read More
                 </button>
               </div>
+              {sessionData?.user.id ==campground?.authorId &&(
               <div className="mt-8 flex gap-4">
                 <button
                   type="button"
@@ -140,11 +123,13 @@ const Show: NextPage = () => {
                   </button>
                 </Link>
               </div>
+
+              )}
             </div>
           </div>
-          <div className="mt-2 border">
-            <h2 className="text-center text-2xl">Reviews:</h2>
-            <form onSubmit={commentHandler}>
+          <div className="mt-2">
+            {/* <h2 className="text-center text-2xl">Reviews:</h2> */}
+            {/* <form onSubmit={commentHandler}>
               <textarea
                 className="w-full bg-gray-300 px-2 text-lg"
                 ref={commentRef}
@@ -156,34 +141,84 @@ const Show: NextPage = () => {
               {sessionData?.user ? (
                 <button className="w-24 rounded-2xl bg-sky-500">Comment</button>
               ) : null}
-            </form>
-            <ul className="p-2 ">
+            </form> */}
+            <CommentForm campId={param} />
+            <ul className="p-2 space-y-4">
               {campground?.reviews
                 .slice(0)
                 .reverse()
                 .map((review) => (
-                  <li
-                    className="mt-2 flex h-20 items-center justify-between bg-white px-4"
-                    key={review.id}
-                  >
-                    <div className="flex w-screen flex-col">
-                      <p className="mb-2 text-blue-600">{review.username}</p>
-                      <div className="w-1/2 overflow-auto">
-                        {review.comment}
-                      </div>
-                    </div>
+                  <li key={review.id}>
+                    {" "}
+                    <article>
+                      <div className="mb-4 flex items-center space-x-4">
+                        <UserSvg />
 
-                    {review.userId == sessionData?.user?.id ? (
-                      <div className="flex items-center justify-center">
-                        <a
-                          className="flex h-8 w-20 items-center justify-center rounded-2xl bg-red-600 text-red-900 duration-300 hover:scale-110 hover:cursor-pointer"
-                          id={review.id}
-                          onClick={deleteReviewHandler}
-                        >
-                          Delete
-                        </a>
+                        <div className="space-y-1 font-medium dark:text-white">
+                          <p>
+                            {review.username}
+                            {/* <time
+                              title="2014-08-16 19:00"
+                              className="block text-sm text-gray-500 dark:text-gray-400"
+                            >
+                              Joined on August 2014
+                            </time> */}
+                          </p>
+                        </div>
                       </div>
-                    ) : null}
+                      <div className="mb-1 flex items-center">
+                      {[...Array(campground?.review).keys()].map((i: number) => (
+                      <Star textColor="text-yellow-400" key={i} />
+                    ))}
+                    {[...Array(5 - (campground?.review || 0)).keys()].map(
+                      (i: number) => (
+                        <Star textColor="text-gray-200" key={i} />
+                      )
+                    )}
+                        {/* <h3 className="ml-2 text-sm font-semibold text-gray-900 dark:text-white">
+                          Thinking to buy another one!
+                        </h3> */}
+                      </div>
+                      <footer className="mb-5 text-sm text-gray-500 dark:text-gray-400">
+                        <p>
+                          Reviewed on{" "}
+                          <time title="2017-03-03 19:00">
+                            {review.createdAt.toDateString()}
+                          </time>
+                        </p>
+                      </footer>
+                      <p className="mb-2 text-gray-500 dark:text-gray-400">
+                        {review.comment}
+                      </p>
+
+                      <a
+                        href="#"
+                        className="mb-4 block text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
+                      >
+                        Read more
+                      </a>
+                      <aside>
+                        {review.userId == sessionData?.user?.id && (
+                          <div className="mt-1 flex items-center space-x-3 divide-x divide-gray-200 dark:divide-gray-600">
+                            <a
+                              onClick={() => deleteReviewHandler(review.id)}
+                              className="cursor-pointer rounded-lg border border-red-300 bg-white px-2 py-1.5 text-xs font-medium text-red-900 hover:bg-red-100 focus:outline-none focus:ring-4 focus:ring-red-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:hover:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
+                            >
+                              Delete
+                            </a>
+                            <a
+                              href="#"
+                              className="pl-4 text-sm font-medium text-blue-600 hover:underline dark:text-blue-500"
+                            >
+                              Edit
+                            </a>
+                          </div>
+                        )}
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          19 people found this helpful
+                        </p>
+                      </aside>
+                    </article>
                   </li>
                 ))}
             </ul>
