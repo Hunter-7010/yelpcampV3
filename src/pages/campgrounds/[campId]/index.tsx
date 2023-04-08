@@ -4,20 +4,21 @@ import { api } from "~/utils/api";
 import { useRef } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import Star from "~/components/svgs/star";
 
 const Show: NextPage = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
 
   const param = router.query.campId as string;
-  const campground = api.campground.getById.useQuery(
+  const { data: campground } = api.campground.getById.useQuery(
     {
       id: param ? param : "",
     },
     {
       refetchOnWindowFocus: false,
     }
-  ).data?.campground;
+  );
 
   const ctx = api.useContext();
   const deleteCamp = api.campground.deleteCamp.useMutation({
@@ -46,27 +47,108 @@ const Show: NextPage = () => {
     e.preventDefault();
     const reviewData = {
       campId: param,
-      comment: commentRef.current?.value ||"",
+      comment: commentRef.current?.value || "",
     };
     insertReview.mutate(reviewData);
     if (commentRef.current) {
       commentRef.current.value = "";
     }
-
   };
 
   const deleteReviewHandler = (e: React.MouseEvent<HTMLElement>): void => {
     const reviewId = { reviewId: e.currentTarget.id };
     deleteReview.mutate(reviewId);
-    
   };
 
   return (
     <div className=" ">
+      <section>
+        <div className="relative mx-auto max-w-screen-xl px-4 py-8">
+          <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4">
+              <img
+                alt="campground picture"
+                src={campground?.image}
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null; // prevents looping
+                  currentTarget.src =
+                    "https://images.unsplash.com/photo-1487730116645-74489c95b41b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80";
+                }}
+                className="aspect-square w-full rounded-xl object-cover"
+              />
+            </div>
+
+            <div className="sticky top-0">
+              <strong className="rounded-full border border-blue-600 bg-gray-100 px-3 py-0.5 text-xs font-medium tracking-wide text-blue-600">
+                {campground?.authorName}
+              </strong>
+
+              <div className="mt-8 flex justify-between">
+                <div className="max-w-[35ch] space-y-2">
+                  <h1 className="text-xl font-bold sm:text-2xl">
+                    {campground?.name}
+                  </h1>
+
+                  <p className="text-sm">{campground?.address}</p>
+                  <p className="text-xs opacity-50">
+                    {campground?.createdAt.toDateString()}
+                  </p>
+
+                  <div className="-ml-0.5 flex">
+                    {[...Array(campground?.review).keys()].map(() => (
+                      <Star textColor="text-yellow-400" />
+                    ))}
+                    {[...Array(5 - (campground?.review || 0)).keys()].map(
+                      () => (
+                        <Star textColor="text-gray-200" />
+                      )
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-lg font-bold">${campground?.price}</p>
+              </div>
+
+              <div className="mt-4">
+                <div className="prose max-w-none">
+                  <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Ipsa veniam dicta beatae eos ex error culpa delectus rem
+                    tenetur, architecto quam nesciunt, dolor veritatis nisi
+                    minus inventore, rerum at recusandae?
+                  </p>
+                </div>
+
+                <button className="mt-2 text-sm font-medium underline">
+                  Read More
+                </button>
+              </div>
+              <div className="mt-8 flex gap-4">
+                <button
+                  type="button"
+                  onClick={deleteHandler}
+                  className="mb-2 mr-2 rounded-lg border border-red-700 px-5 py-2.5 text-center text-sm font-medium text-red-700 hover:bg-red-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:bg-red-600 dark:hover:text-white dark:focus:ring-red-900"
+                >
+                  Delete
+                </button>
+                <Link href={`/campgrounds/${param}/edit`}>
+                  <button
+                    type="button"
+                    className="mb-2 mr-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                  >
+                    Edit
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {campground ? (
         <div className="flex flex-col items-center justify-center ">
           <img
-          alt="campground picture"
+            alt="campground picture"
             src={campground.image}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // prevents looping
@@ -81,7 +163,7 @@ const Show: NextPage = () => {
           <p className="">{campground.price}$/Night</p>
 
           <p className="">Review:{campground.review}</p>
-          <p className="">Address:{campground.address}</p>
+          <p className="">Address:{campground?.address}</p>
           <p className="">
             Created At: {campground.createdAt.toLocaleDateString()}
           </p>

@@ -2,16 +2,14 @@
 
 import type { NextPage } from "next";
 import Link from "next/link";
-import { ChangeEvent, Fragment, useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { Fragment, useEffect } from "react";
 import { api } from "~/utils/api";
-import DropDown from "../../components/dropDown";
 import { useSession } from "next-auth/react";
 import { CampTypes } from "~/types/campground.types";
+import SearchComponent from "~/components/searchComponent";
 
 const Infinite: NextPage = () => {
   const { data: sessionData } = useSession();
-  const router = useRouter();
 
   let skip = 0;
   const { fetchNextPage, data, isFetchingNextPage, hasNextPage, remove } =
@@ -35,20 +33,6 @@ const Infinite: NextPage = () => {
     fetchNextPage();
   }, []);
 
-  const [searchTerm, setSearchTerms] = useState("");
-
-  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerms(e.currentTarget.value);
-  };
-  const onSearchHandler = (e: React.MouseEvent<HTMLElement> | null): void => {
-    void router.push(`/campgrounds/q/${searchTerm.toLowerCase()}`);
-  };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === "Enter") {
-      onSearchHandler(null);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center md:h-full">
       <div
@@ -67,44 +51,7 @@ const Infinite: NextPage = () => {
           </div>
         ) : null}
       </div>
-      <div className="flex h-12 w-full items-center justify-between bg-white shadow-lg">
-        <DropDown />
-        <div className="mr-52 flex">
-          <input
-            type="text"
-            name=""
-            id=""
-            className="border pl-2 shadow-md"
-            placeholder="Search Campground"
-            onChange={onChangeHandler}
-            onKeyDown={handleKeyDown}
-          />
-          <a
-            className="flex w-8 cursor-pointer items-center justify-center bg-sky-400 shadow-md"
-            onClick={onSearchHandler}
-          >
-            <svg
-              className="text-gray-200 "
-              width="21"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {" "}
-              <circle
-                cx="11.7669"
-                cy="11.7666"
-                r="8.98856"
-                stroke="currentColor"
-              ></circle>{" "}
-              <path
-                d="M18.0186 18.4851L21.5426 22"
-                stroke="currentColor"
-              ></path>{" "}
-            </svg>
-          </a>
-        </div>
-      </div>
+      <SearchComponent />
 
       <div className="mt-4  w-full sm:flex sm:flex-wrap ">
         {data?.pages.map((group: { camp: CampTypes[] }, i: number) => (

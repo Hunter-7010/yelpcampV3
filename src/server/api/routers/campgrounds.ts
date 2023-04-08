@@ -9,15 +9,13 @@ export const campgroundRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const campground = await ctx.prisma.camp.findUnique({
+      return await ctx.prisma.camp.findUnique({
         where: {
           id: input.id,
         },
         include: { reviews: true },
       });
-      return {
-        campground: campground,
-      };
+     
     }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.camp.findMany({

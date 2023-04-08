@@ -7,7 +7,7 @@ type LayoutProps = {
 
 const LayOut = (props: LayoutProps) => {
   return (
-    <main className="bg-gray-100 dark:text-white font-serif">
+    <main className="dark:text-white font-serif dark:bg-gray-800">
       <Head>
         <title>YelpCamp</title>
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
