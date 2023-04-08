@@ -46,9 +46,9 @@ const Edit: NextPage = () => {
 
     void mutate(campData);
   };
-  const campground = api.campground.getById.useQuery({
+  const {data:campground} = api.campground.getById.useQuery({
     id: param ? param : "",
-  }).data?.campground;
+  })
   if (!campground) {
     return <div>Loading...</div>;
   }

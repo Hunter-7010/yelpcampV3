@@ -142,10 +142,56 @@ const Show: NextPage = () => {
               </div>
             </div>
           </div>
+          <div className="mt-2 border">
+            <h2 className="text-center text-2xl">Reviews:</h2>
+            <form onSubmit={commentHandler}>
+              <textarea
+                className="w-full bg-gray-300 px-2 text-lg"
+                ref={commentRef}
+                disabled={!sessionData?.user ? true : false}
+                placeholder={
+                  !sessionData?.user ? "Please sign in to comment" : "Comment"
+                }
+              ></textarea>
+              {sessionData?.user ? (
+                <button className="w-24 rounded-2xl bg-sky-500">Comment</button>
+              ) : null}
+            </form>
+            <ul className="p-2 ">
+              {campground?.reviews
+                .slice(0)
+                .reverse()
+                .map((review) => (
+                  <li
+                    className="mt-2 flex h-20 items-center justify-between bg-white px-4"
+                    key={review.id}
+                  >
+                    <div className="flex w-screen flex-col">
+                      <p className="mb-2 text-blue-600">{review.username}</p>
+                      <div className="w-1/2 overflow-auto">
+                        {review.comment}
+                      </div>
+                    </div>
+
+                    {review.userId == sessionData?.user?.id ? (
+                      <div className="flex items-center justify-center">
+                        <a
+                          className="flex h-8 w-20 items-center justify-center rounded-2xl bg-red-600 text-red-900 duration-300 hover:scale-110 hover:cursor-pointer"
+                          id={review.id}
+                          onClick={deleteReviewHandler}
+                        >
+                          Delete
+                        </a>
+                      </div>
+                    ) : null}
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
       </section>
 
-      {campground ? (
+      {/* {campground ? (
         <div className="flex flex-col items-center justify-center ">
           <img
             alt="campground picture"
@@ -256,7 +302,7 @@ const Show: NextPage = () => {
           </svg>
           <span className="sr-only">Loading...</span>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
