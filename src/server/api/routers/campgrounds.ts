@@ -68,7 +68,7 @@ export const campgroundRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.camp.create({
+      return await ctx.prisma.camp.create({
         data: {
           name: input.name,
           address: input.address,
@@ -94,7 +94,7 @@ export const campgroundRouter = createTRPCRouter({
         },
       });
       if (camp?.authorId === ctx.session.user.id) {
-        await ctx.prisma.camp.delete({
+        return await ctx.prisma.camp.delete({
           where: {
             id: input.id,
           },
@@ -120,7 +120,7 @@ export const campgroundRouter = createTRPCRouter({
         },
       });
       if (camp?.authorId === ctx.session.user.id) {
-        await ctx.prisma.camp.update({
+        return await ctx.prisma.camp.update({
           where: {
             id: input.id,
           },
@@ -145,7 +145,7 @@ export const campgroundRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      await ctx.prisma.reviews.create({
+      return await ctx.prisma.reviews.create({
         data: {
           comment: input.comment,
           description: input.description,
@@ -169,7 +169,7 @@ export const campgroundRouter = createTRPCRouter({
         },
       });
       if (review?.userId === ctx.session.user.id) {
-        await ctx.prisma.reviews.delete({
+        return await ctx.prisma.reviews.delete({
           where: {
             id: input.reviewId,
           },

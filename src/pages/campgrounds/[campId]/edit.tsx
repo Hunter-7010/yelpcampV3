@@ -48,8 +48,8 @@ const NewCamp: NextPage = () => {
 
   const ctx = api.useContext();
   const { mutateAsync } = api.campground.updateCamp.useMutation({
-    onSuccess: () => {
-      void router.push("/campgrounds");
+    onSuccess: (data) => {
+      void router.push(`/campgrounds/${data?.id}`);
       return ctx.invalidate();
     },
   });
