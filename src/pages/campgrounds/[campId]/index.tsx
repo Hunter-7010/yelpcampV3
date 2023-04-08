@@ -95,12 +95,12 @@ const Show: NextPage = () => {
                   </p>
 
                   <div className="-ml-0.5 flex">
-                    {[...Array(campground?.review).keys()].map(() => (
-                      <Star textColor="text-yellow-400" />
+                    {[...Array(campground?.review).keys()].map((i: number) => (
+                      <Star textColor="text-yellow-400" key={i} />
                     ))}
                     {[...Array(5 - (campground?.review || 0)).keys()].map(
-                      () => (
-                        <Star textColor="text-gray-200" />
+                      (i: number) => (
+                        <Star textColor="text-gray-200" key={i} />
                       )
                     )}
                   </div>
