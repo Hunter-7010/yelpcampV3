@@ -45,7 +45,7 @@ export const campgroundRouter = createTRPCRouter({
         cursor: z.number().min(0).default(0), // <-- "cursor" needs to exist, but can be any type
         skip: z.number(),
       })
-    )
+    ) 
     .query(async ({ input, ctx }) => {
       const limit = 3;
       const { cursor } = input;
