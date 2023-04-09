@@ -10,12 +10,13 @@ import UserSvg from "~/components/svgs/user";
 import { toast } from "react-hot-toast";
 import DeleteConfirmation from "~/components/deleteConfirmation";
 import DeleteConfirmationReview from "~/components/deleteConfirmationReview";
+import OneCampLoading from "~/components/oneCampLoading";
 const Show: NextPage = () => {
   const { data: sessionData } = useSession();
   const router = useRouter();
 
   const param = router.query.campId as string;
-  const { data: campground } = api.campground.getById.useQuery(
+  const { data: campground,isLoading } = api.campground.getById.useQuery(
     {
       id: param ? param : "",
     },
@@ -31,7 +32,7 @@ const Show: NextPage = () => {
       return ctx.invalidate();
     },
   });
-  const { mutateAsync: deleteReview, isLoading } =
+  const { mutateAsync: deleteReview} =
     api.campground.deleteReview.useMutation({
       onSuccess: () => {
         return ctx.invalidate();
@@ -74,7 +75,9 @@ const Show: NextPage = () => {
       }
     );
   };
-
+  if (isLoading) {
+   return <OneCampLoading />;
+  }
   return (
     <div className="">
       <section>

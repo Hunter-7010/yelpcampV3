@@ -3,7 +3,7 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import SearchComponent from "~/components/searchComponent";
 import Header from "~/components/header";
-import LoadingSpinner from "~/components/loadingSpinner";
+import CampsLoading from "~/components/campsLoading";
 const Campgrounds: NextPage = () => {
 
   const { data: campgroundData, isLoading } = api.campground.getAll.useQuery(
@@ -67,7 +67,7 @@ const Campgrounds: NextPage = () => {
           ))}
         </div>
       ) : (
-       <LoadingSpinner/>
+     <CampsLoading/>
       )}
     </div>
   );
