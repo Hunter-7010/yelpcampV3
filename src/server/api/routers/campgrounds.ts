@@ -52,7 +52,11 @@ export const campgroundRouter = createTRPCRouter({
 
       const camp = await ctx.prisma.camp.findMany({
         take: limit,
-
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+        ],
         skip: limit * cursor,
       });
 

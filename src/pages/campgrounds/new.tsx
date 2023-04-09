@@ -96,7 +96,7 @@ const NewCamp: NextPage = () => {
 
     formData.append("upload_preset", "my-uploads");
 
-    const data = await fetch(
+    const data = fetch(
       "https://api.cloudinary.com/v1_1/dddvtrxcz/image/upload",
       {
         method: "POST",
@@ -110,21 +110,12 @@ const NewCamp: NextPage = () => {
         };
       });
 
-    const payload = {
-      ...dataToSend,
-      image: data.secure_url,
-      review: rating,
-    };
-    setImageSrc(data.secure_url);
-    setUploadData(data.secure_url);
-    console.log(payload);
-
     void toast.promise(
-      mutateAsync(payload),
+      data,
       {
-        loading: "...Loading",
-        success: "Saved The Campground",
-        error: "Something went wrong",
+        loading: "...Saving Image",
+        success: "Image saved successfully!",
+        error: "Cant upload image!",
       },
       {
         style: {
@@ -135,6 +126,32 @@ const NewCamp: NextPage = () => {
         },
       }
     );
+    data.then((data) => {
+      const payload = {
+        ...dataToSend,
+        image: data.secure_url,
+        review: rating,
+      };
+      setImageSrc(data.secure_url);
+      setUploadData(data.secure_url);
+
+      void toast.promise(
+        mutateAsync(payload),
+        {
+          loading: "...Saving Campground",
+          success: "Campground saved successfully!",
+          error: "Something went wrong!",
+        },
+        {
+          style: {
+            minWidth: "250px",
+          },
+          success: {
+            duration: 1000,
+          },
+        }
+      );
+    });
   };
   return (
     <div className="">

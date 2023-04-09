@@ -21,7 +21,7 @@ const NewCamp: NextPage = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [rating, setRating] = useState(3);
   useEffect(() => {
-    if (status=="unauthenticated") {
+    if (status == "unauthenticated") {
       void router.push("/");
     }
   }, [status]);
@@ -100,7 +100,7 @@ const NewCamp: NextPage = () => {
 
     formData.append("upload_preset", "my-uploads");
 
-    const data = await fetch(
+    const data = fetch(
       "https://api.cloudinary.com/v1_1/dddvtrxcz/image/upload",
       {
         method: "POST",
@@ -114,22 +114,12 @@ const NewCamp: NextPage = () => {
         };
       });
 
-    const payload = {
-      ...dataToSend,
-      image: data.secure_url,
-      review: rating,
-      id: param,
-    };
-    setImageSrc(data.secure_url);
-    setUploadData(data.secure_url);
-
-
     void toast.promise(
-      mutateAsync(payload),
+      data,
       {
-        loading: "...Loading",
-        success: "Edited The Campground",
-        error: "Something went wrong",
+        loading: "...Saving Image",
+        success: "Image saved successfully!",
+        error: "Cant upload image!",
       },
       {
         style: {
@@ -140,6 +130,33 @@ const NewCamp: NextPage = () => {
         },
       }
     );
+    data.then((data) => {
+      const payload = {
+        ...dataToSend,
+        image: data.secure_url,
+        review: rating,
+        id: param,
+      };
+      setImageSrc(data.secure_url);
+      setUploadData(data.secure_url);
+
+      void toast.promise(
+        mutateAsync(payload),
+        {
+          loading: "...Loading",
+          success: "Editing The Campground",
+          error: "Something went wrong",
+        },
+        {
+          style: {
+            minWidth: "250px",
+          },
+          success: {
+            duration: 1000,
+          },
+        }
+      );
+    });
   };
   const {
     data: campground,
@@ -150,7 +167,6 @@ const NewCamp: NextPage = () => {
       id: param,
     },
     {
-    
       refetchOnWindowFocus: false,
     }
   );
