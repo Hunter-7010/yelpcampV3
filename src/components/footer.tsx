@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer aria-label="Site Footer" className="bg-white dark:bg-gray-800">
+    <footer aria-label="Site Footer" className="bg-white transition dark:bg-gray-800">
       <div className="mx-auto max-w-screen-xl px-4 pb-8 sm:px-6 lg:px-8 ">
         <div className="border-t border-gray-100 pt-8 dark:border-gray-800 sm:flex sm:items-center sm:justify-between">
           <nav aria-label="Footer Navigation - Support">

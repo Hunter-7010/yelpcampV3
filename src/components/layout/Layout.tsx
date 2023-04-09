@@ -9,7 +9,7 @@ type LayoutProps = {
 
 const LayOut = (props: LayoutProps) => {
   return (
-    <main className="font-serif text-gray-900 dark:bg-gray-800 dark:text-white">
+    <main className="font-serif text-gray-900 transition-all dark:bg-gray-800 dark:text-white">
       <Toaster />
       <Head>
         <title>YelpCamp</title>

@@ -11,7 +11,7 @@ const NavBar: React.FC = () => {
   const router = useRouter();
 
   return (
-    <header aria-label="Site Header" className="bg-white dark:bg-gray-900">
+    <header aria-label="Site Header" className="bg-white transition dark:bg-gray-900">
       <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
         <Link href="/">
           <div className="block text-teal-600 dark:text-teal-300">
@@ -97,17 +97,14 @@ const NavBar: React.FC = () => {
                   Login
                 </a>
               )}
-
             </div>
             <div className="hidden md:block">
               <DarkMode />
-
             </div>
 
             <SideBar>
               <div className="flex justify-center">
-            <DarkMode />
-
+                <DarkMode />
               </div>
               <div>
                 <Link href="/campgrounds">
