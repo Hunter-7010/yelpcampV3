@@ -36,7 +36,7 @@ const Home: NextPage = () => {
               </Link>
             ) : (
               <a
-                className="block w-full rounded bg-white px-12 py-3 text-sm font-medium text-teal-600 shadow hover:text-teal-400 focus:outline-none focus:ring active:text-teal-500 sm:w-auto"
+                className="block w-full cursor-pointer rounded bg-white px-12 py-3 text-sm font-medium text-teal-600 shadow hover:text-teal-400 focus:outline-none focus:ring active:text-teal-500 sm:w-auto"
                 title="sign in with Google"
                 onClick={() => void signIn("google")}
               >
