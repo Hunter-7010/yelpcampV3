@@ -39,7 +39,6 @@ const CommentForm = ({ campId }: Props) => {
   const { mutateAsync: insertReview } = api.campground.insertReview.useMutation(
     {
       onSuccess: () => {
-        toast.success("Successfully created!");
         return ctx.invalidate();
       },
     }
