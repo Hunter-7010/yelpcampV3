@@ -81,7 +81,7 @@ const NewCamp: NextPage = () => {
    * @description Triggers when the main form is submitted
    */
 
-  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> = async (
+  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> =  (
     dataToSend
   ) => {
     const form = formRef.current!;
@@ -151,6 +151,8 @@ const NewCamp: NextPage = () => {
           },
         }
       );
+    }).catch(() => {
+      toast.error('Something went wrong');
     });
   };
   return (

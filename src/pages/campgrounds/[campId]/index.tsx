@@ -25,25 +25,54 @@ const Show: NextPage = () => {
   );
 
   const ctx = api.useContext();
-  const deleteCamp = api.campground.deleteCamp.useMutation({
+  const { mutateAsync: deleteCamp } = api.campground.deleteCamp.useMutation({
     onSuccess: () => {
       void router.push("/campgrounds");
       return ctx.invalidate();
     },
   });
-  const { mutate: deleteReview, isLoading } =
+  const { mutateAsync: deleteReview, isLoading } =
     api.campground.deleteReview.useMutation({
       onSuccess: () => {
-        toast.success('Successfully Deleted!');
         return ctx.invalidate();
       },
     });
   const deleteHandler = () => {
-    deleteCamp.mutate({ id: param });
+    void toast.promise(
+      deleteCamp({ id: param }),
+      {
+        loading: "...Deleting Campground...",
+        success: "Campground Deleted successfully!",
+        error: "Something went wrong!",
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 1000,
+        },
+      }
+    );
   };
 
   const deleteReviewHandler = (reviewId: string): void => {
-    deleteReview({ reviewId: reviewId });
+    void toast.promise(
+      deleteReview({ reviewId: reviewId }),
+      {
+        loading: "...Deleting Review...",
+        success: "Review Deleted successfully!",
+        error: "Something went wrong!",
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 1000,
+        },
+      }
+    );
   };
 
   return (

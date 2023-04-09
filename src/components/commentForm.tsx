@@ -36,12 +36,14 @@ const CommentForm = ({ campId }: Props) => {
     resolver: zodResolver(reviewFormSchema),
   });
 
-  const { mutate: insertReview } = api.campground.insertReview.useMutation({
-    onSuccess: () => {
-      toast.success("Successfully created!");
-      return ctx.invalidate();
-    },
-  });
+  const { mutateAsync: insertReview } = api.campground.insertReview.useMutation(
+    {
+      onSuccess: () => {
+        toast.success("Successfully created!");
+        return ctx.invalidate();
+      },
+    }
+  );
 
   useEffect(() => {
     reset();
@@ -52,7 +54,23 @@ const CommentForm = ({ campId }: Props) => {
     dataToSend
   ) => {
     const payLoad = { ...dataToSend, review: rating, campId: campId };
-    insertReview(payLoad);
+
+    void toast.promise(
+      insertReview(payLoad),
+      {
+        loading: "...Adding Comment",
+        success: "Comment added successfully!",
+        error: "Something went wrong!",
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 1000,
+        },
+      }
+    );
   };
   return (
     // eslint-disable-next-line

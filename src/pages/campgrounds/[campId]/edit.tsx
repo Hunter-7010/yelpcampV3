@@ -85,7 +85,7 @@ const NewCamp: NextPage = () => {
    * @description Triggers when the main form is submitted
    */
 
-  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> = async (
+  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> = (
     dataToSend
   ) => {
     const form = formRef.current!;
@@ -130,33 +130,37 @@ const NewCamp: NextPage = () => {
         },
       }
     );
-    data.then((data) => {
-      const payload = {
-        ...dataToSend,
-        image: data.secure_url,
-        review: rating,
-        id: param,
-      };
-      setImageSrc(data.secure_url);
-      setUploadData(data.secure_url);
+    data
+      .then((data) => {
+        const payload = {
+          ...dataToSend,
+          image: data.secure_url,
+          review: rating,
+          id: param,
+        };
+        setImageSrc(data.secure_url);
+        setUploadData(data.secure_url);
 
-      void toast.promise(
-        mutateAsync(payload),
-        {
-          loading: "...Loading",
-          success: "Editing The Campground",
-          error: "Something went wrong",
-        },
-        {
-          style: {
-            minWidth: "250px",
+        void toast.promise(
+          mutateAsync(payload),
+          {
+            loading: "...Loading",
+            success: "Editing The Campground",
+            error: "Something went wrong",
           },
-          success: {
-            duration: 1000,
-          },
-        }
-      );
-    });
+          {
+            style: {
+              minWidth: "250px",
+            },
+            success: {
+              duration: 1000,
+            },
+          }
+        );
+      })
+      .catch(() => {
+        toast.error("Something went wrong");
+      });
   };
   const {
     data: campground,

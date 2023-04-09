@@ -6,7 +6,7 @@ const Header = () => {
     <div
       className="relative flex h-80 w-full select-none flex-col items-center justify-center bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `url("https://images.unsplash.com/photo-1530488562579-7c1dd2e6667b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80")`,
+        backgroundImage: `url("https://res.cloudinary.com/dddvtrxcz/image/upload/v1681039172/my-uploads/ultd4vzsv9phvkbftzqo.jpg")`,
       }}
     >
       <div className=" absolute inset-0 z-10 bg-black/50" />
