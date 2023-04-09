@@ -2,12 +2,12 @@
 
 import type { NextPage } from "next";
 import Link from "next/link";
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import { CampTypes } from "~/types/campground.types";
 import SearchComponent from "~/components/searchComponent";
-
+import Header from "~/components/header";
 const Infinite: NextPage = () => {
   const { data: sessionData } = useSession();
 
@@ -41,22 +41,7 @@ const Infinite: NextPage = () => {
 
   return (
     <div className="flex flex-col items-center md:h-full">
-      <div
-        className="flex h-80 w-full select-none flex-col items-center justify-center bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url("https://images.unsplash.com/photo-1530488562579-7c1dd2e6667b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80")`,
-        }}
-      >
-        <div className="text-5xl text-white">Welcome to YelpCamp</div>
-        <div className="mt-2 text-lg text-white ">
-          View CampGround form all around the world!
-        </div>
-        {!sessionData ? (
-          <div className="mt-2 text-lg font-bold text-white ">
-            Sign in to Add a Campground
-          </div>
-        ) : null}
-      </div>
+           <Header/>
       <SearchComponent />
 
       <div className="w-full">

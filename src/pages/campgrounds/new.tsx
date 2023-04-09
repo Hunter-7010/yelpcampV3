@@ -23,7 +23,7 @@ const NewCamp: NextPage = () => {
     if (status == "unauthenticated") {
       void router.push("/");
     }
-  }, []);
+  }, [status]);
   const campgroundFormSchema = z.object({
     name: z.string().min(1, "Cannot be empty"),
     address: z.string(),
@@ -43,7 +43,7 @@ const NewCamp: NextPage = () => {
 
   const ctx = api.useContext();
   const { mutateAsync } = api.campground.addCamp.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       void router.push("/campgrounds");
       return ctx.invalidate();
     },

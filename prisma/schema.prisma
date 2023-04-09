@@ -71,7 +71,7 @@ model Camp {
 
 model Reviews {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  comment     String
+  title     String
   description String
   review      Int
   campId      String   @db.ObjectId

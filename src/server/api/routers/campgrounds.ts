@@ -13,10 +13,14 @@ export const campgroundRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
-        include: { reviews: true },
+        include: {
+          reviews: {
+            take: 20,
+          },
+        },
       });
     }),
-    getByIdNoReviews: publicProcedure
+  getByIdNoReviews: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       return await ctx.prisma.camp.findUnique({
@@ -139,15 +143,15 @@ export const campgroundRouter = createTRPCRouter({
     .input(
       z.object({
         campId: z.string(),
-        comment: z.string(),
-        description: z.string(),
+        title: z.string(),
+        description: z.string().default(""),
         review: z.number(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.reviews.create({
         data: {
-          comment: input.comment,
+          title: input.title,
           description: input.description,
           review: input.review,
           userId: ctx.session.user.id,

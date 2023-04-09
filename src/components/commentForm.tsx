@@ -1,58 +1,128 @@
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { useSession, signIn } from "next-auth/react";
+import { toast } from "react-hot-toast";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+
+import Rating from "./rating";
 type Props = {
   campId: string;
 };
 
 const CommentForm = ({ campId }: Props) => {
+  const [rating, setRating] = useState(3);
   const { data: sessionData } = useSession();
+
+  //animation
+  const [animationParent] = useAutoAnimate<HTMLDivElement>();
   const ctx = api.useContext();
-  const commentRef = useRef<HTMLTextAreaElement>(null);
+
+  const reviewFormSchema = z.object({
+    campId: z.string(),
+    title: z.string().min(1, "Cannot be empty"),
+    description: z.string().optional(),
+    review: z.number().int().positive(),
+  });
+  type reviewFormSchemaType = z.infer<typeof reviewFormSchema>;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<reviewFormSchemaType>({
+    resolver: zodResolver(reviewFormSchema),
+  });
+
   const { mutate: insertReview } = api.campground.insertReview.useMutation({
     onSuccess: () => {
+      toast.success("Successfully created!");
       return ctx.invalidate();
     },
   });
 
-  const commentHandler = (e: React.SyntheticEvent): void => {
-    e.preventDefault();
-    const reviewData = {
-      campId: campId,
-      comment: commentRef.current?.value || "",
-      description: "",
-      review: 3,
-    };
-    insertReview(reviewData);
-    if (commentRef.current) {
-      commentRef.current.value = "";
-    }
+  useEffect(() => {
+    reset();
+    setRating(3);
+  }, [isSubmitSuccessful]);
+
+  const formSubmitHandler: SubmitHandler<reviewFormSchemaType> = (
+    dataToSend
+  ) => {
+    const payLoad = { ...dataToSend, review: rating, campId: campId };
+    insertReview(payLoad);
   };
   return (
-    <form onSubmit={commentHandler}>
+    // eslint-disable-next-line
+    <form onSubmit={handleSubmit(formSubmitHandler)}>
       <div className="mb-4 w-full rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-700">
-        <div className="rounded-t-lg bg-white px-4 py-2 dark:bg-gray-800">
-          <label htmlFor="comment" className="sr-only">
-            Your comment
+        <input type="hidden" defaultValue={campId} {...register("campId")} />
+
+        <div className="w-1/2 p-2">
+          <label
+            htmlFor="base-input"
+            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Rating
+          </label>
+          <input
+            type="hidden"
+            value={rating}
+            {...register("review", {
+              valueAsNumber: true,
+            })}
+          />
+          <Rating rating={rating} setRating={setRating} />
+        </div>
+        <div ref={animationParent} className="mb-2 w-1/4 p-2">
+          <label
+            htmlFor="base-input"
+            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Title
+          </label>
+          <input
+            type="text"
+            id="base-input"
+            {...register("title")}
+            className="block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
+          />
+          {errors.title && (
+            <p className="mt-1 text-xs text-red-600 dark:text-red-500">
+              {" "}
+              {errors.title.message}
+            </p>
+          )}
+        </div>
+        <div className="mb-2 p-2">
+          <label
+            htmlFor="description"
+            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Your Comment
           </label>
           <textarea
-            id="comment"
+            id="description"
             rows={4}
-            ref={commentRef}
+            {...register("description")}
             disabled={!sessionData?.user ? true : false}
             placeholder={
               !sessionData?.user
                 ? "Please Sign in to make a comment"
                 : "Write a comment..."
             }
-            className="w-full border-0 bg-white px-0 text-sm text-gray-900 focus:outline-none focus:ring-0 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
+            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-teal-500 focus:ring-teal-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
           ></textarea>
         </div>
+
         <div className="flex items-center justify-between border-t px-3 py-2 dark:border-gray-600">
           {sessionData?.user ? (
             <button
               type="submit"
-              className="inline-flex items-center rounded-lg bg-blue-700 px-4 py-2.5 text-center text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900"
+              disabled={isSubmitSuccessful}
+              className="inline-flex items-center rounded-lg bg-blue-700 px-4 py-2.5 text-center text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 dark:focus:ring-blue-900"
             >
               Post comment
             </button>
