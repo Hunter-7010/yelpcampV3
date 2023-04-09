@@ -93,7 +93,7 @@ const CommentForm = ({ campId }: Props) => {
           />
           <Rating rating={rating} setRating={setRating} />
         </div>
-        <div ref={animationParent} className="mb-2 w-1/2 lg:w-1/4 p-2">
+        <div ref={animationParent} className="mb-2 w-full lg:w-1/4 p-2">
           <label
             htmlFor="base-input"
             className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
