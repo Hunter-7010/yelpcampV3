@@ -62,9 +62,12 @@ const OneCampLoading = () => {
                       </div>
                     </div>
                     <div className="mb-1 flex items-center">
-                      {[...Array(5)].map((i: number) => (
+                   
                         <Star textColor="text-gray-200" key={i} />
-                      ))}
+                        <Star textColor="text-gray-200" key={i} />
+                        <Star textColor="text-gray-200" key={i} />
+                        <Star textColor="text-gray-200" key={i} />
+                        <Star textColor="text-gray-200" key={i} />
                       <h3 className="ml-2 h-4 w-28 rounded-full bg-gray-400 text-sm font-semibold text-gray-900 dark:bg-gray-800 dark:text-white"></h3>
                     </div>
                     <footer className="mb-5 text-sm text-gray-500 dark:text-gray-400">
