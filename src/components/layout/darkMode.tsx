@@ -30,7 +30,7 @@ const DarkMode = () => {
       </svg>
 
       <label className="relative inline-flex cursor-pointer items-center">
-        <input type="checkbox" checked={darkMode} className="peer sr-only" />
+        <input type="checkbox" readOnly checked={darkMode} className="peer sr-only" />
         <div
           onClick={switchMode}
           className="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-teal-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-teal-800"

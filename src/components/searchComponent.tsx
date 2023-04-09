@@ -34,9 +34,10 @@ const SearchComponent = () => {
             </label>
 
             <input
-              className="h-10 w-full rounded-full border-none bg-white pl-4 pr-10 text-sm shadow-sm focus:outline-teal-500 dark:bg-gray-700 dark:outline-none dark:focus:outline-teal-500 sm:w-56"
+              className="h-10 w-full rounded-full border-none transition bg-white pl-4 pr-10 text-sm shadow-sm focus:ring-teal-500 dark:bg-gray-700 dark:ring-none dark:focus:ring-teal-500 sm:w-56"
               id="search"
               type="search"
+              
               placeholder="Search Campground..."
               onChange={onChangeHandler}
               onKeyDown={handleKeyDown}

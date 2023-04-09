@@ -13,21 +13,20 @@ import Rating from "~/components/rating";
 
 const NewCamp: NextPage = () => {
   const router = useRouter();
-  const [campName, setCampName] = useState("");
-  const { data: sessionData } = useSession();
+  const { status } = useSession();
   const param = router.query.campId as string;
   //animation
   const [animationParent] = useAutoAnimate<HTMLDivElement>();
-  // const imageCloudUrl = env.PUBLIC_CLOUDINARY_URL
+
   const formRef = useRef<HTMLFormElement>(null);
   const [rating, setRating] = useState(3);
   useEffect(() => {
-    if (!sessionData?.user) {
+    if (status=="unauthenticated") {
       void router.push("/");
     }
-  }, []);
+  }, [status]);
   const campgroundFormSchema = z.object({
-    id: z.string().min(24),
+    id: z.string(),
     name: z.string().min(1, "Cannot be empty"),
     address: z.string(),
     description: z.string(),
@@ -40,16 +39,16 @@ const NewCamp: NextPage = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitSuccessful },
   } = useForm<campgroundFormSchemaType>({
     resolver: zodResolver(campgroundFormSchema),
   });
-  console.log(errors);
 
   const ctx = api.useContext();
   const { mutateAsync } = api.campground.updateCamp.useMutation({
-    onSuccess: (data) => {
-      void router.push(`/campgrounds/${data?.id}`);
+    onSuccess: () => {
+      void router.push("/campgrounds");
       return ctx.invalidate();
     },
   });
@@ -90,9 +89,9 @@ const NewCamp: NextPage = () => {
     dataToSend
   ) => {
     const form = formRef.current!;
-    const fileInput = Array.from(form.elements as unknown as HTMLInputElement[]).find(
-      (el) => el.name === "file"
-    ) as HTMLInputElement;
+    const fileInput = Array.from(
+      form.elements as unknown as HTMLInputElement[]
+    ).find((el) => el.name === "file") as HTMLInputElement;
 
     const formData = new FormData();
 
@@ -123,7 +122,7 @@ const NewCamp: NextPage = () => {
     };
     setImageSrc(data.secure_url);
     setUploadData(data.secure_url);
-    console.log(payload);
+
 
     void toast.promise(
       mutateAsync(payload),
@@ -142,22 +141,32 @@ const NewCamp: NextPage = () => {
       }
     );
   };
-  const { data: campground, isLoading } =
-    api.campground.getByIdNoReviews.useQuery(
-      {
-        id: param ? param : "",
-      },
-      {
-        onSuccess: (data) => {
-          setImageSrc(data?.image ?? "");
-          setRating(data?.review ?? 3);
-          setValue("id", campground?.id ?? param);
-          setCampName(data?.name ?? "");
-          console.log(data);
-        },
-      }
-    );
-  console.log("buggy name", campground);
+  const {
+    data: campground,
+    isLoading,
+    isSuccess,
+  } = api.campground.getById.useQuery(
+    {
+      id: param,
+    },
+    {
+    
+      refetchOnWindowFocus: false,
+    }
+  );
+  useEffect(() => {
+    if (isSuccess && campground) {
+      setImageSrc(campground.image);
+      setRating(campground.review);
+      setValue("id", campground.id);
+      setValue("name", campground.name);
+      setValue("address", campground.address);
+      setValue("description", campground.description);
+      setValue("image", campground.image);
+      setValue("review", campground.review);
+      setValue("price", campground.price);
+    }
+  }, [isSuccess]);
   if (isLoading) {
     return <div>...Loading</div>;
   }
@@ -178,14 +187,10 @@ const NewCamp: NextPage = () => {
           <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
             Edit Campground
           </h2>
-          <form ref={formRef} onSubmit={void handleSubmit(formSubmitHandler)}>
+          {/* eslint-disable-next-line */}
+          <form ref={formRef} onSubmit={handleSubmit(formSubmitHandler)}>
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-              <input
-                type="readonly"
-                value={param}
-                {...register("name")}
-                id=""
-              />
+              <input type="hidden" value={param} {...register("id")} />
               <div className="sm:col-span-2">
                 <label
                   htmlFor="name"
@@ -193,11 +198,12 @@ const NewCamp: NextPage = () => {
                 >
                   Campground Name
                 </label>
+
                 <input
                   type="text"
                   {...register("name")}
                   id="name"
-                  defaultValue={campName}
+                  defaultValue={campground?.name}
                   className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-teal-600 focus:ring-teal-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-teal-500 dark:focus:ring-teal-500"
                   placeholder="Type Campground name"
                 />
@@ -315,6 +321,7 @@ const NewCamp: NextPage = () => {
             </button>
           </form>
         </div>
+        {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
       </section>
     </div>
   );

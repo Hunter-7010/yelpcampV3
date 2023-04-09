@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import React, { useRef, useEffect, useState, ReactNode } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
@@ -13,14 +13,14 @@ import Rating from "~/components/rating";
 
 const NewCamp: NextPage = () => {
   const router = useRouter();
-  const { data: sessionData } = useSession();
+  const { status } = useSession();
   //animation
   const [animationParent] = useAutoAnimate<HTMLDivElement>();
   // const imageCloudUrl = env.PUBLIC_CLOUDINARY_URL
   const formRef = useRef<HTMLFormElement>(null);
   const [rating, setRating] = useState(3);
   useEffect(() => {
-    if (!sessionData?.user) {
+    if (status == "unauthenticated") {
       void router.push("/");
     }
   }, []);
@@ -44,7 +44,7 @@ const NewCamp: NextPage = () => {
   const ctx = api.useContext();
   const { mutateAsync } = api.campground.addCamp.useMutation({
     onSuccess: (data) => {
-      void router.push(`/campgrounds/${data.id}`);
+      void router.push("/campgrounds");
       return ctx.invalidate();
     },
   });
@@ -153,7 +153,8 @@ const NewCamp: NextPage = () => {
           <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
             Add a new Campground
           </h2>
-          <form ref={formRef} onSubmit={void handleSubmit(formSubmitHandler)}>
+          {/* eslint-disable-next-line */}
+          <form ref={formRef} onSubmit={handleSubmit(formSubmitHandler)}>
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
               <div className="sm:col-span-2">
                 <label
