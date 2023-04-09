@@ -7,7 +7,7 @@ const OneCampLoading = () => {
         <div className="relative mx-auto max-w-screen-xl px-4 py-8 animate-pulse">
           <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
             <div className="grid grid-cols-1 gap-4">
-             <div className="bg-gray-200 dark:bg-gray-600 h-[608px] rounded-2xl"></div>
+             <div className="bg-gray-200 dark:bg-gray-600 h-[308px] md:h-[508px] rounded-2xl"></div>
             </div>
 
             <div className="sticky space-y-12 top-0">
