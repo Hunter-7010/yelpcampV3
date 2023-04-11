@@ -22,7 +22,7 @@ const SearchComponent = () => {
   return (
     <header
     aria-label="Page Header"
-    className="w-full bg-gray-50 transition dark:bg-gray-800"
+    className="w-full bg-gray-50 transition dark:bg-gray-900"
   >
     <div className="mx-auto max-w-screen-xl px-4 py-5 sm:px-6 lg:px-8">
       <div className="flex items-center justify-end gap-4">

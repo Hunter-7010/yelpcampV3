@@ -11,7 +11,7 @@ export default function SideBar({ children }: Props) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="block rounded bg-gray-100 p-2.5 text-gray-600 transition hover:text-gray-600/75 dark:bg-gray-800 dark:text-white dark:hover:text-white/75 md:hidden"
+        className="block rounded bg-gray-100 p-2.5 text-gray-600 transition hover:text-gray-600/75 dark:bg-gray-900 dark:text-white dark:hover:text-white/75 md:hidden"
       >
         <span className="sr-only">Toggle menu</span>
         <svg
