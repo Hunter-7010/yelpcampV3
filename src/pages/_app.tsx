@@ -19,8 +19,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <Script
           async
           defer
-          data-website-id="645b9926-6990-4e1d-8491-4a2bd8585dbf"
-          src="https://umami-production-f85b.up.railway.app/umami.js"
+          data-website-id="d2965b22-27c8-441e-b3a2-21896266844e"
+          src="https://umamianalytics.netlify.app/umami.js"
         />
       </LayOut>
     </SessionProvider>
