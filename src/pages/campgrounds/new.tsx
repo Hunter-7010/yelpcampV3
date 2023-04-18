@@ -296,7 +296,7 @@ const NewCamp: NextPage = () => {
             <button
               type="submit"
               disabled={isSubmitSuccessful}
-              className={`mt-4 inline-flex items-center rounded-lg bg-teal-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-teal-800 focus:ring-4 focus:ring-teal-200 disabled:opacity-40 dark:focus:ring-teal-900 sm:mt-6 ${isSubmitSuccessful &&"cursor-wait"}`}
+              className={`mt-4 inline-flex items-center rounded-lg bg-teal-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-teal-800 focus:ring-4 focus:ring-teal-200 disabled:opacity-40 dark:focus:ring-teal-900 sm:mt-6 ${isSubmitSuccessful ?"cursor-wait":""}`}
             >
               Add Campground
             </button>
