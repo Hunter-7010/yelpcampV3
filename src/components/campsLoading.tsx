@@ -31,12 +31,12 @@ const CampsLoading = () => {
 
           <div className="relative z-20 flex items-start justify-between p-4 sm:p-6 lg:p-8">
             <div className="pt-14 text-white">
-              <h3 className="h-4 w-28 rounded-full bg-gray-400 dark:bg-gray-800 text-xl font-bold sm:text-2xl"></h3>
+              <h3 className="h-4 w-28 rounded-full bg-gray-400 text-xl font-bold dark:bg-gray-800 sm:text-2xl"></h3>
 
-              <p className="text-sm mt-2 h-4 w-44 rounded-full bg-gray-400 dark:bg-gray-800 font-bold sm:text-2xl"></p>
+              <p className="mt-2 h-4 w-44 rounded-full bg-gray-400 text-sm font-bold dark:bg-gray-800 sm:text-2xl"></p>
             </div>
 
-            <span className="inline-flex items-center gap-0.5 rounded-full bg-gray-600 dark:bg-black px-2 py-1 text-xs font-semibold text-white">
+            <span className="inline-flex items-center gap-0.5 rounded-full bg-gray-600 px-2 py-1 text-xs font-semibold text-white dark:bg-black">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 text-yellow-300"

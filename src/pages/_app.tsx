@@ -17,10 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <LayOut>
         <Component {...pageProps} />
         <Script
-          async
-          defer
-          data-website-id="d2965b22-27c8-441e-b3a2-21896266844e"
-          src="https://umamianalytics.netlify.app/umami.js"
+          async src="https://umamianalytics.netlify.app/script.js" data-website-id="3e8fc22d-68c2-483c-92f7-106e42e15d67"
         />
       </LayOut>
     </SessionProvider>

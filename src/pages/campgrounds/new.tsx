@@ -81,7 +81,7 @@ const NewCamp: NextPage = () => {
    * @description Triggers when the main form is submitted
    */
 
-  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> =  (
+  const formSubmitHandler: SubmitHandler<campgroundFormSchemaType> = (
     dataToSend
   ) => {
     const form = formRef.current!;
@@ -126,34 +126,36 @@ const NewCamp: NextPage = () => {
         },
       }
     );
-    data.then((data) => {
-      const payload = {
-        ...dataToSend,
-        image: data.secure_url,
-        review: rating,
-      };
-      setImageSrc(data.secure_url);
-      setUploadData(data.secure_url);
+    data
+      .then((data) => {
+        const payload = {
+          ...dataToSend,
+          image: data.secure_url,
+          review: rating,
+        };
+        setImageSrc(data.secure_url);
+        setUploadData(data.secure_url);
 
-      void toast.promise(
-        mutateAsync(payload),
-        {
-          loading: "...Saving Campground",
-          success: "Campground saved successfully!",
-          error: "Something went wrong!",
-        },
-        {
-          style: {
-            minWidth: "250px",
+        void toast.promise(
+          mutateAsync(payload),
+          {
+            loading: "...Saving Campground",
+            success: "Campground saved successfully!",
+            error: "Something went wrong!",
           },
-          success: {
-            duration: 1000,
-          },
-        }
-      );
-    }).catch(() => {
-      toast.error('Something went wrong');
-    });
+          {
+            style: {
+              minWidth: "250px",
+            },
+            success: {
+              duration: 1000,
+            },
+          }
+        );
+      })
+      .catch(() => {
+        void toast.error("Something went wrong");
+      });
   };
   return (
     <div className="">
@@ -294,7 +296,7 @@ const NewCamp: NextPage = () => {
             <button
               type="submit"
               disabled={isSubmitSuccessful}
-              className="mt-4 inline-flex items-center rounded-lg bg-teal-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-teal-800 focus:ring-4 focus:ring-teal-200 disabled:opacity-50 dark:focus:ring-teal-900 sm:mt-6"
+              className={`mt-4 inline-flex items-center rounded-lg bg-teal-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-teal-800 focus:ring-4 focus:ring-teal-200 disabled:opacity-40 dark:focus:ring-teal-900 sm:mt-6 ${isSubmitSuccessful &&"cursor-wait"}`}
             >
               Add Campground
             </button>
