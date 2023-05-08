@@ -1,17 +1,39 @@
 import { Toaster } from "react-hot-toast";
+import nProgress from "nprogress";
+import { useState } from "react";
+import Router from "next/router";
 
 import NavBar from "../navbar";
 import Head from "next/head";
 import Footer from "../footer";
+
 type LayoutProps = {
   children: React.ReactNode; // 👈️ type children
 };
 
 const LayOut = (props: LayoutProps) => {
-  return (
+  const [loading,setLoading]= useState(false);
+  Router.events.on('routeChangeStart',()=>{
+    nProgress.configure({ showSpinner: false });
+    nProgress.start();
+    setLoading(true);
+  })
+  Router.events.on('routeChangeComplete',()=>{
+    nProgress.done();
+    setLoading(false);
+  })
+    return (
     <main className="font-serif text-gray-900 transition-all dark:bg-gray-900 dark:text-white">
       <Toaster />
-      <Head>
+      <Head> 
+        {/* progress bar  */}
+      <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
+          integrity="sha512-42kB9yDlYiCEfx2xVwq0q7hT4uf26FUgSIZBK8uiaEnTdShXjwr8Ip1V4xGJMg3mHkUt9nNuTDxunHF0/EgxLQ=="
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
+        />
         <title>YelpCamp</title>
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
         <meta
