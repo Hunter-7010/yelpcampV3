@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#nprogress .bar {
+  /* background: #29d !important; */
+  @apply !bg-teal-400
+}
